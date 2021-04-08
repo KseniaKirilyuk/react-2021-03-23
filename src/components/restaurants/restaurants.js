@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import Restaurant from '../restaurant';
-import Navigation from '../navigation';
+import Tabs from '../tabs';
 
 const Restaurants = ({ restaurants }) => {
   const [activeRestaurantId, setActiveRestaurant] = useState(restaurants[0].id);
@@ -10,15 +12,28 @@ const Restaurants = ({ restaurants }) => {
     [activeRestaurantId, restaurants]
   );
 
+  const tabs = restaurants.map(({ id, name }) => ({ id, title: name }));
+
   return (
     <div>
-      <Navigation
-        restaurants={restaurants}
-        onRestaurantClick={setActiveRestaurant}
+      <Tabs
+        tabs={tabs}
+        activeId={activeRestaurantId}
+        onChange={setActiveRestaurant}
       />
       <Restaurant restaurant={activeRestaurant} />
     </div>
   );
 };
 
-export default Restaurants;
+Restaurants.propTypes = {
+  restaurants: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+    }).isRequired
+  ).isRequired,
+};
+
+export default connect((state) => ({
+  restaurants: state.restaurants,
+}))(Restaurants);
